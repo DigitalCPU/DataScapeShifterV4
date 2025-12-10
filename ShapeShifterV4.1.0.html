@@ -1,0 +1,3498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ShapeShifterV4 – Next-Gen Terrain Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --bg-body-top: #151b26;
+      --bg-body-bottom: #05060a;
+
+      --bg-main: #05060a;
+      --bg-panel: #0b0f18;
+      --bg-panel-alt: #090d14;
+      --accent: #35f2b3;
+      --accent-soft: #1f9f7c;
+      --accent-warning: #ffcc66;
+      --text-main: #e6f1ff;
+      --text-muted: #7d8ca0;
+      --border-subtle: #1b2433;
+      --shadow-soft: 0 0 24px rgba(0, 0, 0, 0.7);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-pill: 999px;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body[data-theme="amber"] {
+      --bg-body-top: #2b2010;
+      --bg-body-bottom: #050302;
+      --bg-main: #050303;
+      --bg-panel: #160c05;
+      --bg-panel-alt: #1e1107;
+      --accent: #ffb347;
+      --accent-soft: #cc8a3f;
+      --accent-warning: #ffd27f;
+      --text-main: #ffeede;
+      --text-muted: #b8977a;
+      --border-subtle: #3a2613;
+      --font-main: "Courier New", monospace;
+    }
+
+    body[data-theme="steel"] {
+      --bg-body-top: #101624;
+      --bg-body-bottom: #04070b;
+      --bg-main: #04070b;
+      --bg-panel: #050911;
+      --bg-panel-alt: #070c16;
+      --accent: #7fd0ff;
+      --accent-soft: #3a8bbd;
+      --accent-warning: #b0e0ff;
+      --text-main: #e3f3ff;
+      --text-muted: #8aa0c0;
+      --border-subtle: #27354b;
+      --font-main: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body[data-theme="company"] {
+      --bg-body-top: #f7f9fc;
+      --bg-body-bottom: #f2f6fb;
+      --bg-main: #ffffff;
+      --bg-panel: #f0f3f9;
+      --bg-panel-alt: #e8edf5;
+      --accent: #4aa3ff;
+      --accent-soft: #8ec8ff;
+      --accent-warning: #ff6b6b;
+      --text-main: #1a1c22;
+      --text-muted: #566273;
+      --border-subtle: #cfd7e3;
+      --font-main: "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: radial-gradient(circle at top, var(--bg-body-top) 0, var(--bg-body-bottom) 55%);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, rgba(10,16,28,0.96), rgba(6,10,19,0.96));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(88, 255, 199, 0.2);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(16px);
+    }
+
+    body[data-theme="company"] .app-header {
+      background: linear-gradient(135deg, #ffffff, #f3f7fc);
+      border-color: rgba(74, 163, 255, 0.4);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-orb {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #d0fff5 0, var(--accent) 25%, var(--accent-soft) 60%, #02110c 100%);
+      box-shadow:
+        0 0 10px rgba(53, 242, 179, 0.7),
+        0 0 30px rgba(53, 242, 179, 0.4);
+    }
+
+    body[data-theme="amber"] .header-orb {
+      background: radial-gradient(circle at 30% 20%, #fff1d0 0, #ffb347 25%, #cc8a3f 60%, #2b1404 100%);
+      box-shadow:
+        0 0 10px rgba(255, 179, 71, 0.7),
+        0 0 30px rgba(255, 179, 71, 0.4);
+    }
+
+    body[data-theme="steel"] .header-orb {
+      background: radial-gradient(circle at 30% 20%, #e3f5ff 0, #7fd0ff 25%, #3a8bbd 60%, #020713 100%);
+      box-shadow:
+        0 0 10px rgba(127, 208, 255, 0.7),
+        0 0 30px rgba(127, 208, 255, 0.4);
+    }
+
+    body[data-theme="company"] .header-orb {
+      background: radial-gradient(circle at 30% 20%, #ffecec 0, #ff3b3b 28%, #b81421 60%, #53040a 100%);
+      box-shadow:
+        0 0 10px rgba(255, 59, 59, 0.8),
+        0 0 26px rgba(74, 163, 255, 0.7);
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .header-title-main {
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .header-title-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(53, 242, 179, 0.35);
+      background: linear-gradient(135deg, rgba(13, 22, 30, 0.9), rgba(8, 12, 20, 0.9));
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 10px;
+    }
+
+    body[data-theme="company"] .pill {
+      border-color: rgba(74, 163, 255, 0.6);
+      background: linear-gradient(135deg, #f4f7fd, #e5ecf8);
+    }
+
+    .pill span {
+      color: var(--accent);
+    }
+
+    .header-settings-button {
+      width: 32px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      background: radial-gradient(circle at top, rgba(53,242,179,0.2), rgba(6,11,18,0.95));
+      color: var(--accent);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.15s ease-out;
+    }
+
+    body[data-theme="company"] .header-settings-button {
+      border-color: rgba(74, 163, 255, 0.8);
+      background: radial-gradient(circle at top, rgba(74,163,255,0.2), #ffffff);
+    }
+
+    .header-settings-button:hover {
+      border-color: rgba(53, 242, 179, 0.9);
+      box-shadow: 0 0 12px rgba(53, 242, 179, 0.5);
+      color: var(--text-main);
+    }
+
+    body[data-theme="company"] .header-settings-button:hover {
+      border-color: rgba(74, 163, 255, 1);
+      box-shadow: 0 0 12px rgba(74, 163, 255, 0.7);
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 6px;
+      padding: 4px 6px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(90deg, rgba(7,11,20,0.95), rgba(5,7,13,0.95));
+      border: 1px solid rgba(50, 78, 115, 0.7);
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.55);
+    }
+
+    body[data-theme="company"] .tab-bar {
+      background: linear-gradient(90deg, #f6f8fc, #e8edf7);
+      border-color: rgba(207, 215, 227, 0.9);
+    }
+
+    .tab-button {
+      position: relative;
+      flex: 0 0 auto;
+      min-width: 80px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .tab-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at top, rgba(53,242,179,0.2), transparent 60%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease-out;
+    }
+
+    .tab-button:hover::before {
+      opacity: 1;
+    }
+
+    .tab-button:hover {
+      color: var(--text-main);
+      border-color: rgba(53, 242, 179, 0.4);
+    }
+
+    body[data-theme="company"] .tab-button:hover {
+      border-color: rgba(74, 163, 255, 0.7);
+    }
+
+    .tab-button.active {
+      background: radial-gradient(circle at 20% 0, rgba(53,242,179,0.28), rgba(4,9,16,0.9));
+      border-color: rgba(53, 242, 179, 0.9);
+      color: #eafffb;
+      box-shadow:
+        0 0 0 1px rgba(53, 242, 179, 0.35),
+        0 0 14px rgba(53, 242, 179, 0.5);
+    }
+
+    body[data-theme="company"] .tab-button.active {
+      background: radial-gradient(circle at 20% 0, rgba(74,163,255,0.22), #ffffff);
+      border-color: rgba(74, 163, 255, 1);
+      color: #123050;
+      box-shadow:
+        0 0 0 1px rgba(74, 163, 255, 0.5),
+        0 0 12px rgba(74, 163, 255, 0.5);
+    }
+
+    .main-layout {
+      flex: 1 1 auto;
+      display: flex;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, var(--bg-panel), var(--bg-panel-alt));
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 8px;
+      width: 260px;
+      min-width: 200px;
+      max-width: 360px;
+      transition: width 0.22s ease-out, padding 0.22s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body[data-theme="company"] .sidebar {
+      background: linear-gradient(180deg, #f5f7fc, #edf1f9);
+      box-shadow: 0 0 22px rgba(0, 0, 0, 0.08);
+    }
+
+    .sidebar.collapsed {
+      width: 36px;
+      min-width: 36px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 4px 2px 6px 2px;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-toggle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid rgba(83, 108, 151, 0.9);
+      background: radial-gradient(circle at top, rgba(53,242,179,0.25), rgba(6,11,18,0.95));
+      color: var(--accent);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      flex-shrink: 0;
+      transition: all 0.15s ease-out;
+    }
+
+    body[data-theme="company"] .sidebar-toggle {
+      border-color: rgba(119, 144, 182, 0.9);
+      background: radial-gradient(circle at top, rgba(74,163,255,0.25), #ffffff);
+    }
+
+    .sidebar-toggle:hover {
+      border-color: rgba(53, 242, 179, 0.9);
+      box-shadow: 0 0 12px rgba(53, 242, 179, 0.6);
+    }
+
+    body[data-theme="company"] .sidebar-toggle:hover {
+      border-color: rgba(74, 163, 255, 1);
+      box-shadow: 0 0 12px rgba(74, 163, 255, 0.6);
+    }
+
+    .sidebar.collapsed .sidebar-title {
+      opacity: 0;
+    }
+
+    .sidebar-body {
+      flex: 1 1 auto;
+      margin-top: 4px;
+      padding: 6px;
+      border-radius: 10px;
+      background: radial-gradient(circle at top, rgba(34, 46, 66, 0.65), rgba(4, 7, 13, 0.96));
+      border: 1px solid rgba(30, 44, 66, 0.9);
+      overflow: hidden auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent-soft) transparent;
+      font-size: 12px;
+    }
+
+    body[data-theme="company"] .sidebar-body {
+      background: radial-gradient(circle at top, rgba(255,255,255,0.95), #eef2f9);
+      border-color: rgba(207, 215, 227, 0.9);
+    }
+
+    .sidebar.collapsed .sidebar-body {
+      display: none;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-warning);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-section {
+      padding: 6px 0 10px 0;
+      border-bottom: 1px dashed rgba(64, 88, 126, 0.7);
+      margin-bottom: 6px;
+    }
+
+    body[data-theme="company"] .sidebar-section {
+      border-bottom-color: rgba(199, 208, 224, 0.9);
+    }
+
+    .sidebar-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .sidebar-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .chip {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(70, 97, 142, 0.9);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: default;
+    }
+
+    body[data-theme="company"] .chip {
+      border-color: rgba(187, 198, 217, 0.9);
+    }
+
+    .chip.primary {
+      border-color: rgba(53, 242, 179, 0.8);
+      color: var(--accent);
+    }
+
+    /* Active tool highlight */
+    .tool-chip.active {
+        background: rgba(80, 200, 255, 0.30);
+        border: 1px solid rgba(120, 240, 255, 0.7);
+        color: #ffffff;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      margin-bottom: 2px;
+    }
+
+    .field-input,
+    .field-input-auth,
+    .field-select {
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(70, 97, 142, 0.9);
+      background: rgba(3, 7, 13, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      outline: none;
+    }
+
+    body[data-theme="company"] .field-input,
+    body[data-theme="company"] .field-input-auth,
+    body[data-theme="company"] .field-select {
+      background: #ffffff;
+      border-color: rgba(187, 198, 217, 0.9);
+      color: #1a1c22;
+    }
+
+    .field-input::placeholder,
+    .field-input-auth::placeholder {
+      color: rgba(125, 140, 160, 0.7);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px dashed rgba(75, 104, 151, 0.9);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: all 0.15s ease-out;
+    }
+
+    body[data-theme="company"] .btn-ghost {
+      border-color: rgba(187, 198, 217, 0.9);
+      background: rgba(255,255,255,0.8);
+    }
+
+    .btn-ghost span {
+      color: var(--accent);
+      margin-right: 4px;
+    }
+
+    .btn-ghost:hover {
+      border-style: solid;
+      border-color: rgba(53, 242, 179, 0.9);
+      color: var(--text-main);
+      box-shadow: 0 0 10px rgba(53, 242, 179, 0.4);
+    }
+
+    body[data-theme="company"] .btn-ghost:hover {
+      border-color: rgba(74, 163, 255, 1);
+      box-shadow: 0 0 10px rgba(74, 163, 255, 0.35);
+    }
+
+    .theme-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .theme-tile {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 6px 7px;
+      border-radius: 10px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      background: radial-gradient(circle at top, rgba(53,242,179,0.14), rgba(4,8,15,0.95));
+      cursor: pointer;
+      font-size: 10px;
+      text-align: left;
+      transition: all 0.15s ease-out;
+    }
+
+    body[data-theme="company"] .theme-tile {
+      border-color: rgba(187, 198, 217, 0.9);
+      background: radial-gradient(circle at top, rgba(74,163,255,0.08), #ffffff);
+    }
+
+    .theme-tile:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    }
+
+    body[data-theme="company"] .theme-tile:hover {
+      box-shadow: 0 0 10px rgba(74, 163, 255, 0.25);
+    }
+
+    .theme-tile.active {
+      border-color: rgba(53, 242, 179, 0.95);
+      box-shadow:
+        0 0 0 1px rgba(53, 242, 179, 0.4),
+        0 0 14px rgba(53, 242, 179, 0.6);
+    }
+
+    body[data-theme="company"] .theme-tile.active {
+      border-color: rgba(74, 163, 255, 1);
+      box-shadow:
+        0 0 0 1px rgba(74, 163, 255, 0.6),
+        0 0 14px rgba(74, 163, 255, 0.5);
+    }
+
+    .theme-name {
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      margin-bottom: 2px;
+    }
+
+    .theme-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .setting-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    .toggle input {
+      accent-color: var(--accent);
+    }
+
+    .slider-row {
+      margin-top: 4px;
+    }
+
+    .slider-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .slider-value {
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .slider-input {
+      width: 100%;
+    }
+
+    .center-panel {
+      flex: 1 1 auto;
+      min-width: 0;
+      background: radial-gradient(circle at top, rgba(26, 41, 66, 0.9), rgba(4, 7, 13, 0.98));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px 10px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body[data-theme="company"] .center-panel {
+      background: radial-gradient(circle at top, #ffffff, #edf1f9);
+      border-color: rgba(197, 207, 224, 0.95);
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .center-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(61, 89, 135, 0.75);
+    }
+
+    body[data-theme="company"] .center-header {
+      border-bottom-color: rgba(197, 207, 224, 0.9);
+    }
+
+    .center-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .center-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .center-title {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e9fffb;
+    }
+
+    body[data-theme="company"] .center-title {
+      color: #142031;
+    }
+
+    .center-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .center-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      opacity: 0.85;
+    }
+
+    .center-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: flex-end;
+    }
+
+    .toolbar-button {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      background: radial-gradient(circle at top, rgba(53,242,179,0.18), rgba(3,8,15,0.95));
+      color: var(--text-main);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    body[data-theme="company"] .toolbar-button {
+      border-color: rgba(187, 198, 217, 0.9);
+      background: radial-gradient(circle at top, rgba(74,163,255,0.12), #ffffff);
+      color: #142031;
+    }
+
+    .toolbar-button:hover {
+      border-color: rgba(53, 242, 179, 0.95);
+      box-shadow: 0 0 10px rgba(53, 242, 179, 0.55);
+    }
+
+    body[data-theme="company"] .toolbar-button:hover {
+      border-color: rgba(74,163,255,1);
+      box-shadow: 0 0 10px rgba(74, 163, 255, 0.6);
+    }
+
+    .center-body {
+      flex: 1 1 auto;
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px dashed rgba(93, 132, 189, 0.9);
+      background:
+        radial-gradient(circle at 15% 0, rgba(53, 242, 179, 0.12), transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(0, 170, 255, 0.12), transparent 65%),
+        repeating-linear-gradient(
+          135deg,
+          rgba(17, 24, 40, 0.9),
+          rgba(17, 24, 40, 0.9) 1px,
+          rgba(6, 9, 18, 0.9) 1px,
+          rgba(6, 9, 18, 0.9) 4px
+        );
+      box-shadow:
+        inset 0 0 30px rgba(2, 6, 15, 0.9),
+        0 0 22px rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    body[data-theme="company"] .center-body {
+      border-color: rgba(197, 207, 224, 0.9);
+      background:
+        radial-gradient(circle at 15% 0, rgba(74, 163, 255, 0.15), transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(255, 107, 107, 0.13), transparent 65%),
+        linear-gradient(135deg, #f7f9fd, #edf1f9);
+      box-shadow:
+        inset 0 0 10px rgba(255, 255, 255, 0.5),
+        0 0 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .center-placeholder {
+      text-align: center;
+      max-width: 600px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(4, 8, 15, 0.95);
+      border: 1px solid rgba(88, 255, 199, 0.45);
+      color: var(--text-main);
+      font-size: 12px;
+      line-height: 1.5;
+      display: none;
+      margin: 8px 0 14px 0;
+    }
+
+    body[data-theme="company"] .center-placeholder {
+      background: #ffffff;
+      border-color: rgba(197, 207, 224, 0.9);
+    }
+
+    .center-placeholder strong {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 11px;
+    }
+
+    .center-placeholder.active {
+      display: block;
+    }
+
+    .center-overlay-caption {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      opacity: 0.8;
+    }
+
+    .center-overlay-caption span {
+      color: var(--accent);
+    }
+
+    .home-auth-card {
+      text-align: left;
+      max-width: 420px;
+      width: 100%;
+      padding: 18px 18px 16px 18px;
+      border-radius: 12px;
+      background: rgba(4, 8, 15, 0.96);
+      border: 1px solid rgba(88, 255, 199, 0.45);
+      box-shadow:
+        0 0 16px rgba(0, 0, 0, 0.8),
+        inset 0 0 18px rgba(0, 0, 0, 0.7);
+    }
+
+    body[data-theme="company"] .home-auth-card {
+      background: #ffffff;
+      border-color: rgba(197, 207, 224, 0.95);
+      box-shadow:
+        0 0 10px rgba(0, 0, 0, 0.06),
+        0 0 4px rgba(255, 255, 255, 0.6);
+    }
+
+    .home-logo-text {
+      font-size: 22px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .home-logo-text span {
+      color: var(--accent);
+    }
+
+    .home-subline {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .auth-tab-row {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      padding: 2px;
+      margin-bottom: 10px;
+      background: rgba(4, 8, 15, 0.9);
+    }
+
+    body[data-theme="company"] .auth-tab-row {
+      background: #f4f7fd;
+      border-color: rgba(187, 198, 217, 0.9);
+    }
+
+    .auth-tab {
+      min-width: 80px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .auth-tab.active {
+      background: radial-gradient(circle at top, rgba(53,242,179,0.22), rgba(3,8,15,0.95));
+      color: var(--text-main);
+    }
+
+    body[data-theme="company"] .auth-tab.active {
+      background: radial-gradient(circle at top, rgba(74,163,255,0.26), #ffffff);
+      color: #142031;
+      box-shadow: 0 0 6px rgba(74, 163, 255, 0.4);
+    }
+
+    .auth-form {
+      margin-top: 6px;
+    }
+
+    .auth-row {
+      margin-bottom: 6px;
+    }
+
+    .auth-actions {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary-auth {
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(53, 242, 179, 0.9);
+      background: radial-gradient(circle at top, rgba(53,242,179,0.4), rgba(3,8,15,0.95));
+      color: #eafffb;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    body[data-theme="company"] .btn-primary-auth {
+      border-color: rgba(74, 163, 255, 0.95);
+      background: linear-gradient(135deg, #4aa3ff, #2c7cd6);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(74, 163, 255, 0.5);
+    }
+
+    .btn-primary-auth:hover {
+      box-shadow: 0 0 12px rgba(53, 242, 179, 0.7);
+    }
+
+    body[data-theme="company"] .btn-primary-auth:hover {
+      box-shadow: 0 0 14px rgba(74, 163, 255, 0.75);
+    }
+
+    .auth-secondary {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .auth-secondary span {
+      color: var(--accent);
+    }
+
+    .terrain-card {
+      text-align: left;
+      max-width: 540px;
+      width: 100%;
+      padding: 14px 16px 12px 16px;
+      border-radius: 12px;
+      background: rgba(4, 8, 15, 0.96);
+      border: 1px solid rgba(88, 255, 199, 0.45);
+      box-shadow:
+        0 0 16px rgba(0, 0, 0, 0.8),
+        inset 0 0 18px rgba(0, 0, 0, 0.7);
+    }
+
+    body[data-theme="company"] .terrain-card {
+      background: #ffffff;
+      border-color: rgba(197, 207, 224, 0.95);
+      box-shadow:
+        0 0 10px rgba(0, 0, 0, 0.06),
+        0 0 4px rgba(255, 255, 255, 0.6);
+    }
+
+    .terrain-card-header {
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      color: var(--accent);
+    }
+
+    .terrain-card-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .terrain-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .terrain-label-inline {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      margin-bottom: 2px;
+    }
+
+    .terrain-inline-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .terrain-small-input {
+      width: 70px;
+      padding: 3px 5px;
+      border-radius: 6px;
+      border: 1px solid rgba(70, 97, 142, 0.9);
+      background: rgba(3, 7, 13, 0.9);
+      color: var(--text-main);
+      font-size: 11px;
+      outline: none;
+    }
+
+    body[data-theme="company"] .terrain-small-input {
+      background: #ffffff;
+      border-color: rgba(187, 198, 217, 0.9);
+      color: #1a1c22;
+    }
+
+    .terrain-checkbox-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-right: 10px;
+    }
+
+    .terrain-section-divider {
+      margin-top: 8px;
+      margin-bottom: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(88, 116, 164, 0.9);
+      padding-top: 4px;
+    }
+
+    body[data-theme="company"] .terrain-section-divider {
+      border-top-color: rgba(197, 207, 224, 0.9);
+    }
+
+    .terrain-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .terrain-note {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .terrain-note span {
+      color: var(--accent);
+    }
+
+    .terrain-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .terrain-chip {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(70, 97, 142, 0.9);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: default;
+    }
+
+    .terrain-chip.primary {
+      border-color: rgba(53, 242, 179, 0.8);
+      color: var(--accent);
+    }
+
+    body[data-theme="company"] .terrain-chip {
+      border-color: rgba(187, 198, 217, 0.9);
+    }
+
+    .edit-grid-card {
+      text-align: left;
+      max-width: 540px;
+      width: 100%;
+      padding: 14px 16px 12px 16px;
+      border-radius: 12px;
+      background: rgba(4, 8, 15, 0.96);
+      border: 1px solid rgba(88, 255, 199, 0.45);
+      box-shadow:
+        0 0 16px rgba(0, 0, 0, 0.8),
+        inset 0 0 18px rgba(0, 0, 0, 0.7);
+    }
+
+    body[data-theme="company"] .edit-grid-card {
+      background: #ffffff;
+      border-color: rgba(197, 207, 224, 0.95);
+      box-shadow:
+        0 0 10px rgba(0, 0, 0, 0.06),
+        0 0 4px rgba(255, 255, 255, 0.6);
+    }
+
+    .edit-grid-header {
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      color: var(--accent);
+    }
+
+    .edit-grid-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .edit-grid-viewport {
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      background:
+        linear-gradient(to right, rgba(45,59,89,0.7) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(45,59,89,0.7) 1px, transparent 1px),
+        radial-gradient(circle at top left, rgba(53,242,179,0.14), transparent 60%);
+      background-size: calc(100% / 10) calc(100% / 10);
+      box-shadow: inset 0 0 18px rgba(0,0,0,0.9);
+      overflow: hidden;
+    }
+
+    /* HUD bar for Edit Viewport */
+    .edit-hud-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 28px;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 8px;
+      font-size: 12px;
+      color: #aee;
+      border-bottom: 1px solid rgba(140, 255, 255, 0.2);
+      z-index: 10;
+    }
+
+    .edit-hud-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .hud-btn {
+      background: rgba(30, 50, 60, 0.8);
+      border: 1px solid rgba(120, 220, 255, 0.4);
+      color: #dff;
+      padding: 2px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .hud-btn:hover {
+      background: rgba(60, 80, 100, 0.8);
+    }
+
+
+
+        /* Canvas that shows the 100×100 terrain heatmap in Edit view */
+        .edit-grid-canvas-inner {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          display: block;
+          border-radius: 10px;
+          image-rendering: pixelated; /* makes the small cells easier to see */
+        }
+
+        /* Canvas that shows the 100×100 terrain heatmap in Edit view */
+        .edit-grid-canvas-inner {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          display: block;
+          border-radius: 10px;
+          image-rendering: pixelated; /* makes the small cells easier to see */
+        }
+
+    body[data-theme="company"] .edit-grid-viewport {
+      border-color: rgba(187, 198, 217, 0.9);
+      background:
+        linear-gradient(to right, rgba(210, 218, 232, 0.9) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(210, 218, 232, 0.9) 1px, transparent 1px),
+        radial-gradient(circle at top left, rgba(74,163,255,0.12), transparent 60%);
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.15);
+    }
+
+    .edit-grid-overlay-label {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .edit-grid-overlay-label span {
+      color: var(--accent);
+    }
+
+    .edit-grid-footer-note {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .view-card {
+      text-align: left;
+      max-width: 760px;
+      width: 100%;
+      padding: 12px 14px 10px 14px;
+      border-radius: 12px;
+      background: rgba(4, 8, 15, 0.96);
+      border: 1px solid rgba(88, 255, 199, 0.45);
+      box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.85),
+        inset 0 0 20px rgba(0, 0, 0, 0.75);
+    }
+
+    body[data-theme="company"] .view-card {
+      background: #ffffff;
+      border-color: rgba(197, 207, 224, 0.95);
+      box-shadow:
+        0 0 12px rgba(0, 0, 0, 0.08),
+        0 0 4px rgba(255, 255, 255, 0.7);
+    }
+
+    .view-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .view-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+    }
+
+    .view-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .view-viewport {
+      position: relative;
+      width: 100%;
+      padding-top: 60%;
+      border-radius: 10px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      background:
+        radial-gradient(circle at 10% 0, rgba(53,242,179,0.18), transparent 60%),
+        radial-gradient(circle at 90% 100%, rgba(0,170,255,0.16), transparent 60%),
+        linear-gradient(180deg, rgba(1,4,9,1), rgba(3,9,18,1));
+      box-shadow:
+        inset 0 0 26px rgba(0,0,0,0.9),
+        0 0 14px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+
+    body[data-theme="company"] .view-viewport {
+      border-color: rgba(187, 198, 217, 0.9);
+      background:
+        radial-gradient(circle at 10% 0, rgba(74,163,255,0.16), transparent 60%),
+        radial-gradient(circle at 90% 100%, rgba(255,107,107,0.14), transparent 60%),
+        linear-gradient(180deg, #f6f8fd, #e9eef9);
+      box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.15),
+        0 0 8px rgba(0,0,0,0.08);
+    }
+
+    .view-viewport-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 6px;
+      pointer-events: none;
+    }
+
+    .view-viewport-label {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .view-viewport-label span {
+      color: var(--accent);
+    }
+
+    .view-footer-note {
+      margin-top: 6px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .view-footer-note span {
+      color: var(--accent);
+    }
+
+    .view-mode-settings {
+      margin-top: 6px;
+      padding: 6px 6px 8px 6px;
+      border-radius: 8px;
+      border: 1px dashed rgba(72, 101, 146, 0.9);
+      background: rgba(5, 9, 16, 0.9);
+    }
+
+    body[data-theme="company"] .view-mode-settings {
+      border-color: rgba(187, 198, 217, 0.9);
+      background: rgba(246, 249, 255, 0.9);
+    }
+
+    .view-mode-settings-title {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .view-mode-settings-title span {
+      color: var(--accent);
+    }
+
+    .accordion {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .accordion-item {
+      border-radius: 8px;
+      border: 1px solid rgba(72, 101, 146, 0.9);
+      overflow: hidden;
+      background: rgba(4, 8, 15, 0.9);
+    }
+
+    body[data-theme="company"] .accordion-item {
+      border-color: rgba(187, 198, 217, 0.9);
+      background: rgba(248, 250, 255, 0.96);
+    }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .accordion-header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .accordion-mode-check {
+      pointer-events: auto;
+    }
+
+    .accordion-title {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+    }
+
+    .accordion-tagline {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .accordion-chevron {
+      font-size: 11px;
+      color: var(--text-muted);
+      transition: transform 0.15s ease-out;
+    }
+
+    .accordion-item.open .accordion-chevron {
+      transform: rotate(90deg);
+    }
+
+    .accordion-body {
+      padding: 4px 6px 6px 6px;
+      display: none;
+      border-top: 1px dashed rgba(72, 101, 146, 0.9);
+      font-size: 11px;
+    }
+
+    body[data-theme="company"] .accordion-body {
+      border-top-color: rgba(187, 198, 217, 0.9);
+    }
+
+    .accordion-item.open .accordion-body {
+      display: block;
+    }
+
+    .accordion-note {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    [data-side-panel] {
+      display: none;
+    }
+
+    [data-side-panel].active {
+      display: block;
+    }
+
+    @media (max-width: 1100px) {
+      .sidebar {
+        width: 220px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main-layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-width: 100%;
+        min-height: 120px;
+        order: 2;
+      }
+
+      .sidebar.collapsed {
+        width: 100%;
+        min-width: auto;
+      }
+
+      .center-panel {
+        order: 1;
+        min-height: 260px;
+      }
+    }
+  </style>
+</head>
+
+<body data-theme="lab">
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-orb"></div>
+        <div class="header-title">
+          <div class="header-title-main">ShapeShifterV4</div>
+          <div class="header-title-sub">Next-gen terrain and data visualizer</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="btn-open-settings" class="header-settings-button" title="Open settings">
+          SET
+        </button>
+        <div class="pill">
+          Phase <span>1</span> · Layout-only shell
+        </div>
+        <div>Single-file HTML · Ready for grid and Plotly wiring</div>
+      </div>
+    </header>
+
+    <nav class="tab-bar">
+      <button class="tab-button active" data-tab-target="home">Home</button>
+      <button class="tab-button" data-tab-target="terrain">Terrain</button>
+      <button class="tab-button" data-tab-target="edit">Edit</button>
+      <button class="tab-button" data-tab-target="view">View</button>
+    </nav>
+
+    <main class="main-layout">
+      <!-- Left sidebar -->
+      <aside class="sidebar" id="sidebar-left" data-side="left">
+        <div class="sidebar-header">
+          <div class="sidebar-title" id="sidebar-left-title">Home · Profile</div>
+          <button class="sidebar-toggle" data-toggle-side="left" title="Collapse left panel">
+            ‹
+          </button>
+        </div>
+        <div class="sidebar-body">
+          <!-- Home / left: profile -->
+
+
+         
+          <section class="sidebar-section" data-tab-panel="home" data-side-panel="left">
+            <div class="sidebar-section-title">Profile</div>
+
+            <p class="sidebar-note">
+              Home is reserved for the user. This space will host login state, profile details,
+              and a personal overview for the current session.
+            </p>
+
+            <!-- Basic profile placeholder -->
+            <label class="field-label" for="home-display-name">
+              Display name (placeholder)
+            </label>
+            <input
+              id="home-display-name"
+              class="field-input"
+              placeholder="Profile controls will be wired in a later phase"
+            >
+
+            <!-- Theme settings: collapsible with arrow -->
+            <div class="field-group" style="margin-top: 1rem;">
+              <details class="theme-collapsible">
+                <!-- The summary line shows "Themes" with a native arrow icon -->
+                <summary class="field-label">
+                  Themes
+                </summary>
+
+                <div class="theme-options" style="margin-top: 0.5rem;">
+                  <p class="sidebar-note">
+                    Choose a layout theme for the interface. These are placeholders for now and will be wired
+                    to real theme switching in a later phase.
+                  </p>
+
+                  <label class="field-radio">
+                    <input type="radio" name="home-theme" value="dark" checked>
+                    <span>Dark · default layout</span>
+                  </label>
+
+                  <label class="field-radio">
+                    <input type="radio" name="home-theme" value="neon">
+                    <span>Neon grid layout</span>
+                  </label>
+
+                  <label class="field-radio">
+                    <input type="radio" name="home-theme" value="company">
+                    <span>Company / neutral layout</span>
+                  </label>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Home / left: settings -->
+
+          <!-- Home / left: settings -->
+          <section class="sidebar-section" id="home-settings-section" data-tab-panel="home" data-side-panel="left">
+            <div class="sidebar-section-title">Settings</div>
+            <p class="sidebar-note">
+              Settings will hold all personal preferences. Theme selection is active;
+              other options are placeholders for now.
+            </p>
+
+            <!-- Accordion wrapper for settings options -->
+            <div class="accordion-item open">
+              <div class="accordion-header" data-accordion-toggle>
+                <div class="accordion-header-left">
+                  <div>
+                    <div class="accordion-title">Themes</div>
+                    <div class="accordion-tagline">Layout &amp; color schemes</div>
+                  </div>
+                </div>
+                <div class="accordion-chevron">▶</div>
+              </div>
+              <div class="accordion-body">
+                <div class="field-label">Theme</div>
+                <div class="theme-row">
+                  <button class="theme-tile" data-theme-choice="lab">
+                    <div class="theme-name">Lab</div>
+                    <div class="theme-desc">Cyan lab dark · default</div>
+                  </button>
+                  <button class="theme-tile" data-theme-choice="amber">
+                    <div class="theme-name">Amber</div>
+                    <div class="theme-desc">Warm CRT tones · monospace</div>
+                  </button>
+                </div>
+                <div class="theme-row">
+                  <button class="theme-tile" data-theme-choice="steel">
+                    <div class="theme-name">Steel</div>
+                    <div class="theme-desc">Cool steel blue · clean</div>
+                  </button>
+                  <button class="theme-tile" data-theme-choice="company">
+                    <div class="theme-name">Company</div>
+                    <div class="theme-desc">Light UI · sky blue trim</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <div class="accordion-header" data-accordion-toggle>
+                <div class="accordion-header-left">
+                  <div>
+                    <div class="accordion-title">UI sounds</div>
+                    <div class="accordion-tagline">Future click / ambient feedback</div>
+                  </div>
+                </div>
+                <div class="accordion-chevron">▶</div>
+              </div>
+              <div class="accordion-body">
+                <div class="field-label">UI sounds</div>
+                <div class="setting-inline">
+                  <label class="toggle" title="Placeholder only in Phase 1">
+                    <input type="checkbox" disabled>
+                    Sounds on/off (coming later)
+                  </label>
+                  <button class="btn-ghost" type="button">
+                    <span>○</span> Preview click (mock)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- Home / left: archive shell -->
+          <section class="sidebar-section" data-tab-panel="home" data-side-panel="left">
+            <div class="sidebar-section-title">Archive Shell</div>
+            <p class="sidebar-note">
+              The archive will track saved terrains, exports, and sessions. In this phase
+              it is only a visual placeholder to reserve space in the layout.
+            </p>
+            <div class="chip-row">
+              <div class="chip">Scenes: —</div>
+              <div class="chip">Exports: —</div>
+              <div class="chip">Sessions: —</div>
+            </div>
+          </section>
+
+          <!-- Edit / left: layout shell -->
+          <section class="sidebar-section" data-tab-panel="edit" data-side-panel="left">
+            <div class="sidebar-section-title">Edit Layout</div>
+            <p class="sidebar-note">
+              Whole-grid structural operations live here. Mirror functions will act on the
+              shared 100×100 grid (or selection) to create symmetric layouts.
+            </p>
+            <div class="chip-row">
+              <div class="chip primary">Mirror X</div>
+              <div class="chip primary">Mirror Y</div>
+              <div class="chip">Mirror X/Y</div>
+            </div>
+          </section>
+
+          <!-- Edit / left: brush sculpting -->
+          <section class="sidebar-section" data-tab-panel="edit" data-side-panel="left">
+            <div class="sidebar-section-title">Brush Sculpting</div>
+            <p class="sidebar-note">
+              Sculpt terrain as easily as drawing. Brush radius, strength, and target height
+              will map into the shared gridValues array. Repeated passes build height or depth.
+            </p>
+
+            <div class="chip-row">
+            <div class="chip primary tool-chip" data-tool="raise">Raise</div>
+            <div class="chip primary tool-chip" data-tool="lower">Lower</div>
+            <div class="chip primary tool-chip" data-tool="smooth">Smooth</div>
+            <div class="chip primary tool-chip" data-tool="flatten">Flatten</div>
+            <div class="chip">Noise (later)</div>
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Brush radius (cells)</span>
+                <span class="slider-value">~3</span>
+              </div>
+              <input class="slider-input" type="range" min="1" max="10" value="3" disabled>
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Strength per pass</span>
+                <span class="slider-value">placeholder</span>
+              </div>
+              <input class="slider-input" type="range" min="1" max="10" value="4" disabled>
+            </div>
+
+            <label class="field-label" for="edit-brush-target-height">
+              Target height (optional)
+            </label>
+            <input id="edit-brush-target-height" class="field-input" type="number"
+              placeholder="-100.0 to +100.0 (for push/flatten modes)">
+
+            <div class="setting-inline">
+              <label class="toggle" title="Repeated strokes accumulate effect">
+                <input type="checkbox" checked disabled>
+                Build-up with repeated passes
+              </label>
+            </div>
+          </section>
+
+          <!-- Edit / left: terrain stamps -->
+          <section class="sidebar-section" data-tab-panel="edit" data-side-panel="left">
+            <div class="sidebar-section-title">Terrain Stamps Shell</div>
+            <p class="sidebar-note">
+              Quick presets for dropping shaped terrain into the grid: hills, mountains,
+              craters, and structures.
+            </p>
+            <div class="chip-row">
+              <div class="chip primary">Hill</div>
+              <div class="chip primary">Mountain</div>
+              <div class="chip">Fault line</div>
+              <div class="chip">Crater</div>
+              <div class="chip">Building</div>
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Stamp size</span>
+                <span class="slider-value">medium</span>
+              </div>
+              <input class="slider-input" type="range" min="1" max="10" value="5" disabled>
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Height / depth</span>
+                <span class="slider-value">± placeholder</span>
+              </div>
+              <input class="slider-input" type="range" min="-10" max="10" value="2" disabled>
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Rotation</span>
+                <span class="slider-value">0°</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="360" value="0" disabled>
+            </div>
+          </section>
+
+          <!-- Edit / left: height input shell -->
+          <section class="sidebar-section" data-tab-panel="edit" data-side-panel="left">
+            <div class="sidebar-section-title">Height Input Shell</div>
+            <label class="field-label" for="edit-height-target">
+              Target height
+            </label>
+            <input id="edit-height-target" class="field-input" type="number"
+              placeholder="-100 to +100 (visual placeholder)">
+            <label class="field-label" for="edit-height-delta">
+              Delta
+            </label>
+            <input id="edit-height-delta" class="field-input" type="number"
+              placeholder="+/- 0.0 (visual placeholder)">
+            <p class="sidebar-note">
+              Later, these fields will bind directly to grid operations. For now they
+              only lock the layout.
+            </p>
+          </section>
+
+          <!-- Terrain / left: presets -->
+          <section class="sidebar-section" data-tab-panel="terrain" data-side-panel="left">
+            <div class="sidebar-section-title">Terrain Presets Shell</div>
+            <p class="sidebar-note">
+              Quick presets and mixes live here. Clicking a preset will eventually prefill
+              the terrain builder in the center.
+            </p>
+            <div class="chip-row">
+              <div class="chip primary">Flat baseline</div>
+              <div class="chip primary">Hills</div>
+              <div class="chip">Ridges</div>
+              <div class="chip">Crater field</div>
+              <div class="chip">Random mix</div>
+            </div>
+          </section>
+
+          <!-- Terrain / left: noise controls -->
+          <section class="sidebar-section" data-tab-panel="terrain" data-side-panel="left">
+            <div class="sidebar-section-title">Noise Controls Shell</div>
+            <label class="field-label" for="terrain-seed">
+              Seed
+            </label>
+            <input id="terrain-seed" class="field-input" placeholder="Seed (placeholder)">
+            <label class="field-label" for="terrain-scale">
+              Scale
+            </label>
+            <input id="terrain-scale" class="field-input" placeholder="Scale (placeholder)">
+            <p class="sidebar-note">
+              Actual noise functions and terrain math arrive in the Terrain phase.
+            </p>
+          </section>
+
+          <!-- Terrain / left: random generator -->
+          <section class="sidebar-section" data-tab-panel="terrain" data-side-panel="left">
+            <div class="sidebar-section-title">Random Generator</div>
+            <p class="sidebar-note">
+              Random styles will eventually map into a full recipe in the center terrain builder.
+            </p>
+
+            <div class="field-label">Style</div>
+            <div class="terrain-chip-row">
+              <div class="terrain-chip primary">Balanced</div>
+              <div class="terrain-chip">Dense</div>
+              <div class="terrain-chip">Sparse</div>
+            </div>
+
+            <label class="field-label" for="terrain-random-seed">
+              Seed (placeholder)
+            </label>
+            <input id="terrain-random-seed" class="field-input"
+              placeholder="Leave empty for fully random">
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Roughness</span>
+                <span class="slider-value">medium</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="10" value="5" disabled>
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Water level</span>
+                <span class="slider-value">-10</span>
+              </div>
+              <input class="slider-input" type="range" min="-50" max="50" value="-10" disabled>
+            </div>
+
+            <button type="button" class="btn-ghost">
+              <span>♺</span> Randomize (layout only)
+            </button>
+          </section>
+
+          <!-- View / left: view modes as collapsible selectables -->
+          <section class="sidebar-section" data-tab-panel="view" data-side-panel="left">
+            <div class="sidebar-section-title">View Modes</div>
+            <p class="sidebar-note">
+              Each mode is selectable and has its own settings. Multiple modes can be on
+              together, and all of them share the same color theme.
+            </p>
+
+            <div class="accordion" id="view-mode-accordion">
+              <!-- Full mesh -->
+              <div class="accordion-item open">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" checked disabled>
+                    <div>
+                      <div class="accordion-title">Full mesh</div>
+                      <div class="accordion-tagline">Surface pass</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="view-mode-settings">
+                    <div class="view-mode-settings-title">
+                      <span>Full mesh</span> settings
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Variation</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="10" value="4" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Size / footprint</span>
+                        <span class="slider-value">100%</span>
+                      </div>
+                      <input class="slider-input" type="range" min="10" max="100" value="100" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Amount / intensity</span>
+                        <span class="slider-value">100%</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="100" value="100" disabled>
+                    </div>
+                    <div class="accordion-note">
+                      Surface mode that shows a continuous height mesh.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Wireframe -->
+              <div class="accordion-item">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" disabled>
+                    <div>
+                      <div class="accordion-title">Wireframe</div>
+                      <div class="accordion-tagline">Edge pass</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="view-mode-settings">
+                    <div class="view-mode-settings-title">
+                      <span>Wireframe</span> settings
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Variation (density)</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="10" value="5" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Size / thickness</span>
+                        <span class="slider-value">medium</span>
+                      </div>
+                      <input class="slider-input" type="range" min="1" max="10" value="5" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Amount / opacity</span>
+                        <span class="slider-value">80%</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="100" value="80" disabled>
+                    </div>
+                    <div class="accordion-note">
+                      Edges only, good for reading structure on top of other modes.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stacks -->
+              <div class="accordion-item">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" disabled>
+                    <div>
+                      <div class="accordion-title">Stacks</div>
+                      <div class="accordion-tagline">Layered slices</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="view-mode-settings">
+                    <div class="view-mode-settings-title">
+                      <span>Stacks</span> settings
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Variation (slice spacing)</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="10" value="3" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Size / slice height</span>
+                        <span class="slider-value">medium</span>
+                      </div>
+                      <input class="slider-input" type="range" min="1" max="10" value="6" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Amount / number of stacks</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="1" max="20" value="8" disabled>
+                    </div>
+                    <div class="accordion-note">
+                      Slices the terrain into visible strata at different heights.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Points -->
+              <div class="accordion-item">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" disabled>
+                    <div>
+                      <div class="accordion-title">Points</div>
+                      <div class="accordion-tagline">Particle pass</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="view-mode-settings">
+                    <div class="view-mode-settings-title">
+                      <span>Points</span> settings
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Variation (scatter)</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="10" value="7" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Size / point radius</span>
+                        <span class="slider-value">small</span>
+                      </div>
+                      <input class="slider-input" type="range" min="1" max="10" value="3" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Amount / point count</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="100" value="70" disabled>
+                    </div>
+                    <div class="accordion-note">
+                      Points follow the terrain height, ideal for particle-style readings.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vertical bars -->
+              <div class="accordion-item">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" disabled>
+                    <div>
+                      <div class="accordion-title">Vertical bars</div>
+                      <div class="accordion-tagline">Column pass</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="view-mode-settings">
+                    <div class="view-mode-settings-title">
+                      <span>Vertical bars</span> settings
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Variation (height jitter)</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="10" value="4" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Size / bar width</span>
+                        <span class="slider-value">medium</span>
+                      </div>
+                      <input class="slider-input" type="range" min="1" max="10" value="5" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Amount / bar density</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="100" value="60" disabled>
+                    </div>
+                    <div class="accordion-note">
+                      Bars extruded from each cell; useful for a city-block or equalizer feel.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Voxel columns (from your second image) -->
+              <div class="accordion-item">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" disabled>
+                    <div>
+                      <div class="accordion-title">Voxel columns</div>
+                      <div class="accordion-tagline">Blocky pillar field</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="view-mode-settings">
+                    <div class="view-mode-settings-title">
+                      <span>Voxel columns</span> settings
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Variation (column height)</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="10" value="5" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Size / column footprint</span>
+                        <span class="slider-value">medium</span>
+                      </div>
+                      <input class="slider-input" type="range" min="1" max="10" value="5" disabled>
+                    </div>
+                    <div class="slider-row">
+                      <div class="slider-label">
+                        <span>Amount / column density</span>
+                        <span class="slider-value">placeholder</span>
+                      </div>
+                      <input class="slider-input" type="range" min="0" max="100" value="70" disabled>
+                    </div>
+                    <div class="accordion-note">
+                      Block-like pillars rising from the grid, matching the style in your second reference image.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Select all (concept) -->
+              <div class="accordion-item">
+                <div class="accordion-header" data-accordion-toggle>
+                  <div class="accordion-header-left">
+                    <input type="checkbox" class="accordion-mode-check" disabled>
+                    <div>
+                      <div class="accordion-title">Select all</div>
+                      <div class="accordion-tagline">Overlay every mode</div>
+                    </div>
+                  </div>
+                  <div class="accordion-chevron">▶</div>
+                </div>
+                <div class="accordion-body">
+                  <div class="accordion-note">
+                    Concept: a single toggle that will enable all active modes at once
+                    so mesh, wireframe, stacks, points, bars, and voxel columns can be
+                    layered together.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- View / left: color theme dropdowns -->
+          <section class="sidebar-section" data-tab-panel="view" data-side-panel="left">
+            <div class="sidebar-section-title">Color Themes</div>
+            <p class="sidebar-note">
+              These palettes apply to all view modes. Later they will drive the color ramps
+              used in the 3D renderer.
+            </p>
+
+            <label class="field-label" for="view-color-theme">
+              Terrain palette
+            </label>
+            <select id="view-color-theme" class="field-select" disabled>
+              <option>Amber</option>
+              <option>Lava</option>
+              <option>Desert</option>
+              <option>Tundra</option>
+              <option>Oceanic</option>
+              <option>Jungle</option>
+              <option>Topographical</option>
+              <option>Neo (mono green)</option>
+              <option>Rain (mono cyan)</option>
+              <option>Cyber (neon blend)</option>
+            </select>
+
+            <label class="field-label" for="view-hud-theme">
+              HUD palette
+            </label>
+            <select id="view-hud-theme" class="field-select" disabled>
+              <option>HUD-1 · Black on white</option>
+              <option>HUD-2 · White on black</option>
+              <option>HUD-3 · Grey / Red</option>
+              <option>HUD-4 · Grey / Blue</option>
+              <option>HUD-5 · Grey / Green</option>
+            </select>
+          </section>
+
+          <!-- View / left: background & overlays as dropdown -->
+          <section class="sidebar-section" data-tab-panel="view" data-side-panel="left">
+            <div class="sidebar-section-title">Background &amp; Overlay</div>
+            <p class="sidebar-note">
+              Single dropdown to describe how the background and overlays behave for the
+              entire viewport.
+            </p>
+            <label class="field-label" for="view-background-mode">
+              Background mode
+            </label>
+            <select id="view-background-mode" class="field-select" disabled>
+              <option>Grid only</option>
+              <option>Grid + horizon</option>
+              <option>Horizon + depth fog</option>
+              <option>Minimal (no grid)</option>
+              <option>Hidden background</option>
+            </select>
+          </section>
+        </div>
+      </aside>
+
+      <!-- Center main view -->
+      <section class="center-panel">
+        <header class="center-header">
+          <div class="center-header-left">
+            <div class="center-title" id="center-title">Home · User space</div>
+            <div class="center-subtitle" id="center-subtitle">
+              Profile, inbox, archive, and settings hub
+            </div>
+          </div>
+          <div class="center-header-right">
+            <div class="center-toolbar">
+              <button class="toolbar-button" type="button">Undo</button>
+              <button class="toolbar-button" type="button">Redo</button>
+              <button class="toolbar-button" type="button">Clear all</button>
+              <button class="toolbar-button" type="button">Import</button>
+              <button class="toolbar-button" type="button">Save</button>
+            </div>
+            <div class="center-meta">
+              Layout shell · No grid or Plotly logic yet
+            </div>
+          </div>
+        </header>
+
+        <div class="center-body">
+          <!-- Home center -->
+          <div class="center-placeholder active" data-tab-panel="home">
+            <div class="home-auth-card">
+              <div class="home-logo-text">
+                <span>Shape</span>ShifterV4
+              </div>
+              <div class="home-subline">
+                Sign in to your workspace. Profile, preferences, inbox, and archive
+                all live under Home. Terrain work happens under Terrain, Edit, and View.
+              </div>
+
+              <div class="auth-tab-row">
+                <button type="button" class="auth-tab active" data-auth-mode="signin">
+                  Sign In
+                </button>
+                <button type="button" class="auth-tab" data-auth-mode="signup">
+                  Sign Up
+                </button>
+              </div>
+
+              <div class="auth-form" data-auth-panel="signin">
+                <div class="auth-row">
+                  <label class="field-label" for="auth-signin-email">
+                    Email (placeholder)
+                  </label>
+                  <input id="auth-signin-email" class="field-input-auth"
+                    placeholder="user@example.com">
+                </div>
+                <div class="auth-row">
+                  <label class="field-label" for="auth-signin-pass">
+                    Password
+                  </label>
+                  <input id="auth-signin-pass" class="field-input-auth" type="password"
+                    placeholder="Credentials are not wired yet">
+                </div>
+                <div class="auth-actions">
+                  <button type="button" class="btn-primary-auth">
+                    Sign In
+                  </button>
+                  <div class="auth-secondary">
+                    This is a visual layout only. <span>No data is stored.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="auth-form" data-auth-panel="signup" style="display: none;">
+                <div class="auth-row">
+                  <label class="field-label" for="auth-signup-name">
+                    Display name
+                  </label>
+                  <input id="auth-signup-name" class="field-input-auth"
+                    placeholder="Choose a display name">
+                </div>
+                <div class="auth-row">
+                  <label class="field-label" for="auth-signup-email">
+                    Email
+                  </label>
+                  <input id="auth-signup-email" class="field-input-auth"
+                    placeholder="user@example.com">
+                </div>
+                <div class="auth-row">
+                  <label class="field-label" for="auth-signup-pass">
+                    Password
+                  </label>
+                  <input id="auth-signup-pass" class="field-input-auth" type="password"
+                    placeholder="Credentials are not wired yet">
+                </div>
+                <div class="auth-actions">
+                  <button type="button" class="btn-primary-auth">
+                    Create Account
+                  </button>
+                  <div class="auth-secondary">
+                    Account creation will be added in a later phase.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terrain center -->
+          <div class="center-placeholder" data-tab-panel="terrain">
+            <div class="terrain-card">
+              <div class="terrain-card-header">Terrain Builder</div>
+              <div class="terrain-card-subtitle">
+                Center panel holds the full recipe. Left presets and random generator
+                will prefill these fields later. Generate will write to the shared
+                100×100 height grid (logic to be added).
+              </div>
+
+              <!-- Baseline & water -->
+              <div class="terrain-section-divider">
+                Baseline &amp; Water
+              </div>
+
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Baseline</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="1" min="0" max="1"
+                      placeholder="0–1">
+                    <span>Height:</span>
+                    <input class="terrain-small-input" type="number" value="-10" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="0" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Water line</div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Enabled
+                    </label>
+                    <span>Height:</span>
+                    <input class="terrain-small-input" type="number" value="-10" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Relief features -->
+              <div class="terrain-section-divider">
+                Relief Features (Positive)
+              </div>
+
+              <!-- Hills -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Hills</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="30" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Height:</span>
+                    <input class="terrain-small-input" type="number" value="20" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="3" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mountains -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Mountains</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="1" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Height:</span>
+                    <input class="terrain-small-input" type="number" value="90" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="2" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ridges -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Ridges</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="0" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Height:</span>
+                    <input class="terrain-small-input" type="number" value="40" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="4" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Negative features -->
+              <div class="terrain-section-divider">
+                Negative Features (Cut / Depth)
+              </div>
+
+              <!-- Trenches -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Trenches</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="1" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Depth:</span>
+                    <input class="terrain-small-input" type="number" value="-50" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="3" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Craters -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Craters</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="0" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Depth:</span>
+                    <input class="terrain-small-input" type="number" value="-30" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="5" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fault lines -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Fault lines</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="0" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Depth:</span>
+                    <input class="terrain-small-input" type="number" value="-20" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="4" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Structures -->
+              <div class="terrain-section-divider">
+                Structures
+              </div>
+
+              <!-- Buildings -->
+              <div class="terrain-row">
+                <div style="flex:1 1 100%;">
+                  <div class="terrain-label-inline">Buildings</div>
+                  <div class="terrain-inline-group">
+                    <span>Count:</span>
+                    <input class="terrain-small-input" type="number" value="0" min="0" max="50"
+                      placeholder="0–50">
+                    <span>Height:</span>
+                    <input class="terrain-small-input" type="number" value="40" min="-100" max="100"
+                      placeholder="-100 – 100">
+                    <span>Opacity:</span>
+                    <input class="terrain-small-input" type="number" value="100" min="0" max="100"
+                      placeholder="0–100">
+                  </div>
+                  <div class="terrain-inline-group">
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" checked disabled>
+                      Overlap
+                    </label>
+                    <label class="terrain-checkbox-row">
+                      <input type="checkbox" disabled>
+                      Invert
+                    </label>
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-label">
+                      <span>Variation</span>
+                      <span class="slider-value">placeholder</span>
+                    </div>
+                    <input class="slider-input" type="range" min="0" max="10" value="6" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+                                   <!-- Actions -->
+                            <div class="terrain-actions">
+                              <button type="button" class="btn-primary-auth">
+                                Generate
+                              </button>
+                              <div class="terrain-note">
+                                Uses a shared <span>100×100</span> height grid. All feature blocks
+                                will map into gridValues later.
+                              </div>
+                              <div class="terrain-last-action" id="terrain-last-action">
+                                Last action: none yet.
+                              </div>
+                            </div>
+                                      </div>
+                                    </div>
+          <!-- Edit center -->
+          <div class="center-placeholder" data-tab-panel="edit">
+            <div class="edit-grid-card">
+              <div class="edit-grid-header">Edit Grid · 100×100</div>
+              <div class="edit-grid-subtitle">
+                Sculpt the shared heightfield. This is a layout-only viewport for now.
+              </div>
+                            <div class="edit-grid-viewport" id="edit-viewport">
+
+  <!-- HUD bar -->
+  <div class="edit-hud-bar">
+    <span id="edit-hud-status">Viewport ready</span>
+    <div class="edit-hud-buttons">
+      <button class="hud-btn" id="edit-toggle-grid">Grid</button>
+      <button class="hud-btn" id="edit-refresh-view">Refresh</button>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <canvas id="edit-grid-canvas" class="edit-grid-canvas-inner"></canvas>
+
+  <!-- Overlay label -->
+  <div class="edit-grid-overlay-label" id="edit-grid-overlay-label">
+    cell grid · <span>layout only</span>
+  </div>
+</div> 
+             <div class="edit-grid-footer-note">
+                Later, clicking and dragging here will apply the active brush or stamp
+                to the 100×100 gridValues array. Colors and height bands will respond
+                to each stroke.
+              </div>
+            </div>
+          </div>
+
+          <!-- View center -->
+          <div class="center-placeholder" data-tab-panel="view">
+            <div class="view-card">
+              <div class="view-header">
+                <div>
+                  <div class="view-title">3D Terrain Viewport</div>
+                  <div class="view-subtitle">
+                    Uses as much room as possible for the graphic. View modes, themes,
+                    and camera controls are handled in the side panels.
+                  </div>
+                </div>
+                <button type="button" class="btn-ghost" title="Fullscreen (layout only)">
+                  <span>⛶</span> Fullscreen (planned)
+                </button>
+              </div>
+              <div class="view-viewport" id="view-3d-container">
+                <div class="view-viewport-inner">
+                  This surface will later host the Plotly/WebGL renderer for the shared
+                  terrain grid. The goal is immersive viewing with optional fullscreen.
+                </div>
+                <div class="view-viewport-label">
+                  3D viewport · <span>layout only</span>
+                </div>
+              </div>
+              <div class="view-footer-note">
+                Planned interactions: toggle <span>fullscreen</span>, switch between
+                <span>full mesh / wireframe / stacks / points / vertical bars / voxel columns</span>,
+                and apply color themes that affect all modes. Hotkeys such as
+                <span>F</span> for fullscreen and <span>P</span> for screenshot are reserved
+                concepts for later wiring.
+              </div>
+            </div>
+          </div>
+
+          <div class="center-overlay-caption">
+            core viewport · <span>phase 1 layout</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right sidebar -->
+      <aside class="sidebar" id="sidebar-right" data-side="right">
+        <div class="sidebar-header">
+          <div class="sidebar-title" id="sidebar-right-title">Home · Inbox / Archive</div>
+          <button class="sidebar-toggle" data-toggle-side="right" title="Collapse right panel">
+            ›
+          </button>
+        </div>
+        <div class="sidebar-body">
+          <!-- Home / right: inbox -->
+          <section class="sidebar-section" data-tab-panel="home" data-side-panel="right">
+            <div class="sidebar-section-title">Inbox Shell</div>
+            <p class="sidebar-note">
+              Notifications and system messages will appear here in later phases.
+            </p>
+            <div class="chip-row">
+              <div class="chip">Messages: —</div>
+              <div class="chip">Alerts: —</div>
+            </div>
+          </section>
+
+          <!-- Home / right: archive summary -->
+          <section class="sidebar-section" data-tab-panel="home" data-side-panel="right">
+            <div class="sidebar-section-title">Archive Summary</div>
+            <p class="sidebar-note">
+              Summary of saved terrains and exports. Values here are static placeholders.
+            </p>
+            <p class="sidebar-note">
+              Last scene opened: —<br>
+              Last export: —<br>
+              Last login: —
+            </p>
+          </section>
+
+          <!-- Edit / right: selection stats -->
+                     <section class="sidebar-section" data-tab-panel="edit" data-side-panel="right">
+                      <div class="sidebar-section-title">Selection Stats</div>
+                      <p class="sidebar-note">
+                        Global grid statistics based on the shared 100×100 heightfield.
+                        Selection-aware stats will be wired in a later phase.
+                      </p>
+                      <p class="sidebar-note">
+                        Grid size: <span id="edit-grid-size">100×100</span><br>
+                        Total cells: <span id="edit-total-cells">10 000</span>
+                      </p>
+                      <p class="sidebar-note">
+                        Min height: <span id="edit-min-height">—</span><br>
+                        Max height: <span id="edit-max-height">—</span><br>
+                        Average: <span id="edit-avg-height">—</span><br>
+                        Selected cells: <span id="edit-selected-cells">—</span>
+                      </p>
+                    </section>
+
+          <!-- Edit / right: active tool preview -->
+          <section class="sidebar-section" data-tab-panel="edit" data-side-panel="right">
+            <div class="sidebar-section-title">Active Tool Preview Shell</div>
+            <p class="sidebar-note">
+              Summary of the current tool and parameters.
+            </p>
+            <p class="sidebar-note">
+              Active tool: Brush<br>
+              Mode: Raise (placeholder)<br>
+              Brush radius: ~3 cells<br>
+              Strength per pass: —<br>
+              Target height: —<br>
+              Stamp: —<br>
+              Stamp size: —<br>
+              Height/depth: —<br>
+              Rotation: —
+            </p>
+          </section>
+
+                          <!-- Terrain / right -->
+                    <section class="sidebar-section" data-tab-panel="terrain" data-side-panel="right">
+                      <div class="sidebar-section-title">Generation Log</div>
+                      <p class="sidebar-note">
+                        Lightweight log of terrain operations. Entries here are updated when you click
+                        Generate in the Terrain builder.
+                      </p>
+                      <div class="terrain-log">
+                        <div class="terrain-log-empty">
+                          No terrain operations yet. Click <strong>Generate</strong> to create the first entry.
+                        </div>
+                        <ul class="terrain-log-list">
+                          <!-- New entries will be injected here by the Terrain Generate feedback plugin -->
+                        </ul>
+                      </div>
+                    </section>
+
+          <!-- View / right: 3D transform & camera -->
+          <section class="sidebar-section" data-tab-panel="view" data-side-panel="right">
+            <div class="sidebar-section-title">3D Transform &amp; Camera</div>
+            <p class="sidebar-note">
+              Camera and scaling controls for the 3D scene.
+            </p>
+            <div class="chip-row">
+              <div class="chip primary">Orbit</div>
+              <div class="chip">Pan</div>
+              <div class="chip">Top</div>
+              <div class="chip">Isometric</div>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Scale X</span>
+                <span class="slider-value">1.0</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="200" value="100" disabled>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Scale Y</span>
+                <span class="slider-value">1.0</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="200" value="100" disabled>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Scale Z (vertical)</span>
+                <span class="slider-value">1.0</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="300" value="100" disabled>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Aspect</span>
+                <span class="slider-value">auto</span>
+              </div>
+              <input class="slider-input" type="range" min="50" max="150" value="100" disabled>
+            </div>
+          </section>
+
+          <!-- View / right: lighting and shading -->
+          <section class="sidebar-section" data-tab-panel="view" data-side-panel="right">
+            <div class="sidebar-section-title">Lighting &amp; Shading</div>
+            <p class="sidebar-note">
+              Light and surface controls will shape how the terrain reads.
+            </p>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Light intensity</span>
+                <span class="slider-value">placeholder</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="100" value="70" disabled>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Shadow strength</span>
+                <span class="slider-value">placeholder</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="100" value="60" disabled>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Surface shade</span>
+                <span class="slider-value">placeholder</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="100" value="50" disabled>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>Opacity</span>
+                <span class="slider-value">100%</span>
+              </div>
+              <input class="slider-input" type="range" min="0" max="100" value="100" disabled>
+            </div>
+          </section>
+
+          <!-- View / right: capture & fullscreen -->
+          <section class="sidebar-section" data-tab-panel="view" data-side-panel="right">
+            <div class="sidebar-section-title">Capture &amp; Fullscreen</div>
+            <p class="sidebar-note">
+              Reserved for fullscreen immersion and capture tools.
+            </p>
+            <button class="btn-ghost" type="button">
+              <span>⛶</span> Enter fullscreen (layout only)
+            </button>
+            <button class="btn-ghost" type="button">
+              <span>◎</span> Screenshot (planned hotkey)
+            </button>
+            <button class="btn-ghost" type="button">
+              <span>●</span> Start capture (planned)
+            </button>
+            <p class="sidebar-note">
+              Planned hotkeys (concept only for now):<br>
+              F = toggle fullscreen<br>
+              P = capture screenshot<br>
+              R = start/stop recording
+            </p>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const DEFAULT_TAB = "home";
+      const DEFAULT_THEME = "lab";
+
+      const state = {
+        activeTab: DEFAULT_TAB,
+        activeTheme: DEFAULT_THEME,
+        authMode: "signin"
+      };
+
+      const tabButtons = Array.from(document.querySelectorAll(".tab-button"));
+      const sidebarPanels = Array.from(document.querySelectorAll("[data-side-panel]"));
+      const centerPanels = Array.from(document.querySelectorAll(".center-placeholder"));
+      const leftSidebar = document.getElementById("sidebar-left");
+      const rightSidebar = document.getElementById("sidebar-right");
+      const leftTitle = document.getElementById("sidebar-left-title");
+      const rightTitle = document.getElementById("sidebar-right-title");
+      const centerTitle = document.getElementById("center-title");
+      const centerSubtitle = document.getElementById("center-subtitle");
+      const bodyEl = document.body;
+      const themeTiles = Array.from(document.querySelectorAll(".theme-tile"));
+      const settingsButton = document.getElementById("btn-open-settings");
+      const authTabs = Array.from(document.querySelectorAll(".auth-tab"));
+      const authPanels = Array.from(document.querySelectorAll("[data-auth-panel]"));
+      const accordionHeaders = Array.from(document.querySelectorAll("[data-accordion-toggle]"));
+
+      // =====================================================
+      // GLOBAL EDIT STATE
+      // =====================================================
+
+      const editState = {
+          currentTool: "none",
+          brushSize: 3,
+          brushStrength: 10,
+          cursorX: null,
+          cursorY: null
+      };
+
+
+
+            // Terrain core grid model + stats
+            const GRID_WIDTH = 100;
+            const GRID_HEIGHT = 100;
+            const terrainGrid = {
+              width: GRID_WIDTH,
+              height: GRID_HEIGHT,
+              values: new Float32Array(GRID_WIDTH * GRID_HEIGHT)
+            };
+                  let terrainGenerationFlip = false;
+
+            function terrainIndex(x, y) {
+              return y * terrainGrid.width + x;
+            }
+
+            function terrainReset(height) {
+              terrainGrid.values.fill(typeof height === "number" ? height : 0);
+            }
+
+            function terrainGenerateDemoPattern() {
+             
+                      // Alternate between hill and crater so changes are very obvious
+                      terrainGenerationFlip = !terrainGenerationFlip;
+
+                      const cx = (terrainGrid.width - 1) / 2;
+                      const cy = (terrainGrid.height - 1) / 2;
+                      const maxRadius = Math.min(terrainGrid.width, terrainGrid.height) / 2;
+
+                      for (let y = 0; y < terrainGrid.height; y++) {
+                        for (let x = 0; x < terrainGrid.width; x++) {
+                          const dx = x - cx;
+                          const dy = y - cy;
+                          const dist = Math.sqrt(dx * dx + dy * dy);
+
+                          const hillFactor = Math.max(0, 1 - dist / maxRadius); // 0..1
+                          const hillHeight = hillFactor * 60;                    // 0..60
+                          const noise = (Math.random() - 0.5) * 15;              // -7.5..+7.5
+
+                          let h;
+                          if (!terrainGenerationFlip) {
+                            // Hill: high in the center, lower at edges
+                            h = hillHeight + noise;
+                          } else {
+                            // Crater: low in the center, higher at edges
+                            h = -hillHeight + 40 + noise;
+                          }
+
+                          terrainGrid.values[terrainIndex(x, y)] = h;
+                        }
+                      }
+                    }
+
+          
+
+            function terrainComputeStats() {
+              const values = terrainGrid.values;
+              if (!values || values.length === 0) {
+                return { min: 0, max: 0, avg: 0 };
+              }
+
+              let min = Infinity;
+              let max = -Infinity;
+              let sum = 0;
+
+              for (let i = 0; i < values.length; i++) {
+                const v = values[i];
+                if (v < min) min = v;
+                if (v > max) max = v;
+                sum += v;
+              }
+
+              const avg = sum / values.length;
+
+              if (!isFinite(min)) min = 0;
+              if (!isFinite(max)) max = 0;
+              if (!isFinite(avg)) avg = 0;
+
+              return { min, max, avg };
+            }
+
+            // Selection stats panel elements (Edit / right)
+            const editGridSizeEl = document.getElementById("edit-grid-size");
+            const editTotalCellsEl = document.getElementById("edit-total-cells");
+            const editMinHeightEl = document.getElementById("edit-min-height");
+            const editMaxHeightEl = document.getElementById("edit-max-height");
+            const editAvgHeightEl = document.getElementById("edit-avg-height");
+            const editSelectedCellsEl = document.getElementById("edit-selected-cells");
+
+            function terrainUpdateStatsDisplay() {
+              const stats = terrainComputeStats();
+              const totalCells = terrainGrid.width * terrainGrid.height;
+
+              if (editGridSizeEl) {
+                editGridSizeEl.textContent = terrainGrid.width + "×" + terrainGrid.height;
+              }
+              if (editTotalCellsEl) {
+                editTotalCellsEl.textContent = totalCells.toLocaleString();
+              }
+              if (editMinHeightEl) {
+                editMinHeightEl.textContent = stats.min.toFixed(1);
+              }
+              if (editMaxHeightEl) {
+                editMaxHeightEl.textContent = stats.max.toFixed(1);
+              }
+              if (editAvgHeightEl) {
+                editAvgHeightEl.textContent = stats.avg.toFixed(1);
+              }
+              if (editSelectedCellsEl) {
+                // Selection not implemented yet; keep as placeholder
+                editSelectedCellsEl.textContent = "—";
+              }
+            }
+
+            // Initialize grid as flat and update stats once on load
+            terrainReset(0);
+            terrainUpdateStatsDisplay();
+
+
+            // =====================================================
+            // TOOL CHIP SELECTION LOGIC
+            // =====================================================
+
+            // Collect all tool chips in the Brush Sculpting panel
+            const toolChips = Array.from(document.querySelectorAll(".tool-chip"));
+
+            // Add click behavior to select a tool
+            toolChips.forEach(chip => {
+                chip.addEventListener("click", () => {
+
+                    // Update global tool state
+                    editState.currentTool = chip.dataset.tool;
+
+                    // Remove highlight from all chips
+                    toolChips.forEach(c => c.classList.remove("active"));
+
+                    // Highlight the selected chip
+                    chip.classList.add("active");
+
+                    // Debug (optional)
+                    console.log("Selected tool:", editState.currentTool);
+                });
+            });
+
+
+                 
+                        // Edit center: 2D heatmap viewport
+                        const editGridCanvas = document.getElementById("edit-grid-canvas");
+                        const editGridOverlayLabel = document.getElementById("edit-grid-overlay-label");
+                        let editGridCtx = null;
+
+                        function initEditGridCanvas() {
+                          if (!editGridCanvas) return;
+                          if (!editGridCtx) {
+                            editGridCtx = editGridCanvas.getContext("2d");
+                            // Internal drawing resolution
+                            editGridCanvas.width = 400;
+                            editGridCanvas.height = 400;
+                          }
+                        }
+
+                        function renderEditHeatmap() {
+                          if (!editGridCanvas) return;
+                          initEditGridCanvas();
+                          if (!editGridCtx) return;
+
+                          const w = editGridCanvas.width;
+                          const h = editGridCanvas.height;
+                          const cellW = w / terrainGrid.width;
+                          const cellH = h / terrainGrid.height;
+
+                          editGridCtx.clearRect(0, 0, w, h);
+
+                          const stats = terrainComputeStats();
+                          const min = stats.min;
+                          const max = stats.max;
+                          const span = max - min || 1;
+
+                          for (let y = 0; y < terrainGrid.height; y++) {
+                            for (let x = 0; x < terrainGrid.width; x++) {
+                              const v = terrainGrid.values[terrainIndex(x, y)];
+                              let t = (v - min) / span; // 0..1
+                              if (t < 0) t = 0;
+                              if (t > 1) t = 1;
+
+                              // Simple blue → cyan → yellow palette
+                              const r = Math.floor(40 + 215 * t);
+                              const g = Math.floor(80 + 160 * t);
+                              const b = Math.floor(120 + 60 * (1 - t));
+
+                              editGridCtx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+                              editGridCtx.fillRect(x * cellW, y * cellH, cellW + 1, cellH + 1);
+                            }
+                          }
+
+                          // Hide the layout-only label once we have something to show
+                          if (editGridOverlayLabel) {
+                            editGridOverlayLabel.style.display = "none";
+                          }
+                        }
+
+                        // Draw initial flat grid (all heights 0)
+                        renderEditHeatmap();
+                 
+                              // HUD button logic
+                              const editHudStatus = document.getElementById("edit-hud-status");
+                              const toggleGridBtn = document.getElementById("edit-toggle-grid");
+                              const refreshViewBtn = document.getElementById("edit-refresh-view");
+                              const editViewport = document.getElementById("edit-viewport");
+
+                              let editGridVisible = true;
+
+                              if (toggleGridBtn) {
+                                toggleGridBtn.addEventListener("click", () => {
+                                  editGridVisible = !editGridVisible;
+                                  if (editGridVisible) {
+                                    editViewport.style.backgroundSize = "calc(100% / 10) calc(100% / 10)";
+                                    editHudStatus.textContent = "Grid ON";
+                                  } else {
+                                    editViewport.style.backgroundSize = "0 0"; 
+                                    editHudStatus.textContent = "Grid OFF";
+                                  }
+                                });
+                              }
+
+                              if (refreshViewBtn) {
+                                refreshViewBtn.addEventListener("click", () => {
+                                  renderEditHeatmap();
+                                  editHudStatus.textContent = "Refreshed";
+                                });
+                              }
+
+            // Terrain Generate feedback plugin
+            const terrainGenerateBtn = document.querySelector(".terrain-card .terrain-actions .btn-primary-auth");
+            const terrainLastAction = document.getElementById("terrain-last-action");
+            const terrainLogList = document.querySelector(".terrain-log-list");
+            const terrainLogEmpty = document.querySelector(".terrain-log-empty");
+
+            function appendTerrainLogEntry(message) {
+              if (!terrainLogList) return;
+
+              const now = new Date();
+              let timeLabel = "";
+              try {
+                timeLabel = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+              } catch (e) {
+                const h = now.getHours().toString().padStart(2, "0");
+                const m = now.getMinutes().toString().padStart(2, "0");
+                timeLabel = h + ":" + m;
+              }
+
+              const fullMessage = message + " · " + timeLabel;
+
+              if (terrainLogEmpty) {
+                terrainLogEmpty.style.display = "none";
+              }
+
+              const li = document.createElement("li");
+              li.textContent = fullMessage;
+              terrainLogList.prepend(li);
+
+              const maxItems = 8;
+              while (terrainLogList.children.length > maxItems) {
+                terrainLogList.removeChild(terrainLogList.lastElementChild);
+              }
+
+              if (terrainLastAction) {
+                terrainLastAction.textContent = "Last action: " + fullMessage;
+              }
+            }
+                  if (terrainGenerateBtn) {
+                    terrainGenerateBtn.addEventListener("click", function () {
+                      // Populate the shared 100×100 grid with a demo pattern
+                      terrainGenerateDemoPattern();
+                      // Recompute and display stats in the Edit / right panel
+                      terrainUpdateStatsDisplay();
+                      // Redraw the 2D heatmap in the Edit viewport
+                      renderEditHeatmap();
+                      // Keep the existing log behavior
+                      appendTerrainLogEntry("Generated recipe · 100×100 grid");
+                    });
+                  }
+                
+
+      const TAB_LABELS = {
+        home: {
+          left: "Home · Profile",
+          right: "Home · Inbox / Archive",
+          centerTitle: "Home · User space",
+          centerSubtitle: "Profile, inbox, archive, and settings hub"
+        },
+        terrain: {
+          left: "Terrain · Presets",
+          right: "Terrain · Generation log",
+          centerTitle: "Terrain · Builder",
+          centerSubtitle: "All terrain features in one master recipe"
+        },
+        edit: {
+          left: "Edit · Tools",
+          right: "Edit · Selection stats",
+          centerTitle: "Edit · 2D grid editor",
+          centerSubtitle: "Interactive height grid and cell selection"
+        },
+        view: {
+          left: "View · Controls",
+          right: "View · Render status",
+          centerTitle: "View · 3D terrain window",
+          centerSubtitle: "Plotly rendering and animation shell"
+        }
+      };
+
+      function setActiveTab(tabId) {
+        state.activeTab = tabId;
+
+        tabButtons.forEach(btn => {
+          const isActive = btn.getAttribute("data-tab-target") === tabId;
+          btn.classList.toggle("active", isActive);
+        });
+
+        sidebarPanels.forEach(panel => {
+          const panelTab = panel.getAttribute("data-tab-panel");
+          panel.classList.toggle("active", panelTab === tabId);
+        });
+
+        centerPanels.forEach(panel => {
+          const panelTab = panel.getAttribute("data-tab-panel");
+          panel.classList.toggle("active", panelTab === tabId);
+        });
+
+        const labels = TAB_LABELS[tabId] || TAB_LABELS[DEFAULT_TAB];
+        if (labels) {
+          leftTitle.textContent = labels.left;
+          rightTitle.textContent = labels.right;
+          centerTitle.textContent = labels.centerTitle;
+          centerSubtitle.textContent = labels.centerSubtitle;
+        }
+      }
+
+      function toggleSidebar(side) {
+        const el = side === "left" ? leftSidebar : rightSidebar;
+        if (!el) return;
+
+        const collapsed = el.classList.toggle("collapsed");
+        const toggleBtn = el.querySelector(".sidebar-toggle");
+        if (toggleBtn) {
+          if (side === "left") {
+            toggleBtn.textContent = collapsed ? "›" : "‹";
+          } else {
+            toggleBtn.textContent = collapsed ? "‹" : "›";
+          }
+        }
+      }
+
+      function applyTheme(theme) {
+        const allowed = ["lab", "amber", "steel", "company"];
+        if (!allowed.includes(theme)) {
+          theme = DEFAULT_THEME;
+        }
+        state.activeTheme = theme;
+        bodyEl.setAttribute("data-theme", theme);
+
+        try {
+          localStorage.setItem("ssv4-theme", theme);
+        } catch (e) {
+          // ignore storage errors
+        }
+
+        themeTiles.forEach(tile => {
+          const choice = tile.getAttribute("data-theme-choice");
+          tile.classList.toggle("active", choice === theme);
+        });
+      }
+
+      function setAuthMode(mode) {
+        state.authMode = mode;
+        authTabs.forEach(tab => {
+          const tabMode = tab.getAttribute("data-auth-mode");
+          tab.classList.toggle("active", tabMode === mode);
+        });
+        authPanels.forEach(panel => {
+          const panelMode = panel.getAttribute("data-auth-panel");
+          panel.style.display = panelMode === mode ? "" : "none";
+        });
+      }
+
+      function initAccordions() {
+        accordionHeaders.forEach(header => {
+          header.addEventListener("click", (ev) => {
+            // Ignore clicks directly on checkbox to avoid double toggling
+            if (ev.target && ev.target.classList.contains("accordion-mode-check")) {
+              return;
+            }
+            const item = header.closest(".accordion-item");
+            if (!item) return;
+            item.classList.toggle("open");
+          });
+        });
+      }
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = btn.getAttribute("data-tab-target");
+          if (target && target !== state.activeTab) {
+            setActiveTab(target);
+          }
+        });
+      });
+
+      Array.from(document.querySelectorAll("[data-toggle-side]")).forEach(btn => {
+        btn.addEventListener("click", () => {
+          const side = btn.getAttribute("data-toggle-side");
+          if (side === "left" || side === "right") {
+            toggleSidebar(side);
+          }
+        });
+      });
+
+      themeTiles.forEach(tile => {
+        tile.addEventListener("click", () => {
+          const choice = tile.getAttribute("data-theme-choice");
+          if (choice) {
+            applyTheme(choice);
+          }
+        });
+      });
+
+      if (settingsButton) {
+        settingsButton.addEventListener("click", () => {
+          setActiveTab("home");
+          const settingsSection = document.getElementById("home-settings-section");
+          if (settingsSection && typeof settingsSection.scrollIntoView === "function") {
+            settingsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      }
+
+      authTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const mode = tab.getAttribute("data-auth-mode");
+          if (mode && mode !== state.authMode) {
+            setAuthMode(mode);
+          }
+        });
+      });
+
+      let storedTheme = null;
+      try {
+        storedTheme = localStorage.getItem("ssv4-theme");
+      } catch (e) {
+        storedTheme = null;
+      }
+      applyTheme(storedTheme || DEFAULT_THEME);
+      setAuthMode("signin");
+      setActiveTab(DEFAULT_TAB);
+      initAccordions();
+    })();
+
+    // =============================================
+    // TOOL CHIP SELECTION + EDIT STATE MANAGEMENT
+    // =============================================
+
+    // Tool state container
+    const editState = {
+      currentTool: "none",
+      brushSize: 3,
+      brushStrength: 10,
+      cursorX: null,
+      cursorY: null
+    };
+
+    // Collect clickable chips from Brush Sculpting section
+    const toolChips = Array.from(document.querySelectorAll(".tool-chip"));
+
+    // Wire tool selection
+    toolChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+
+        // Update tool state
+        editState.currentTool = chip.dataset.tool;
+
+        // Clear highlight from all chips
+        toolChips.forEach(c => c.classList.remove("active"));
+
+        // Highlight selected chip
+        chip.classList.add("active");
+
+        // Debug output (useful later)
+        console.log("Selected tool:", editState.currentTool);
+      });
+    });
+
+
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
