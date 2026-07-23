@@ -1,0 +1,158 @@
+.pill {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(53, 242, 179, 0.35);
+  background: linear-gradient(135deg, rgba(13, 22, 30, 0.9), rgba(8, 12, 20, 0.9));
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+}
+
+body[data-theme="company"] .pill {
+  border-color: rgba(74, 163, 255, 0.6);
+  background: linear-gradient(135deg, #f4f7fd, #e5ecf8);
+}
+
+.pill span {
+  color: var(--accent);
+}
+
+.header-settings-button {
+  width: 32px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(72, 101, 146, 0.9);
+  background: radial-gradient(circle at top, rgba(53,242,179,0.2), rgba(6,11,18,0.95));
+  color: var(--accent);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.15s ease-out;
+}
+
+body[data-theme="company"] .header-settings-button {
+  border-color: rgba(74, 163, 255, 0.8);
+  background: radial-gradient(circle at top, rgba(74,163,255,0.2), #ffffff);
+}
+
+.header-settings-button:hover {
+  border-color: rgba(53, 242, 179, 0.9);
+  box-shadow: 0 0 12px rgba(53, 242, 179, 0.5);
+  color: var(--text-main);
+}
+
+body[data-theme="company"] .header-settings-button:hover {
+  border-color: rgba(74, 163, 255, 1);
+  box-shadow: 0 0 12px rgba(74, 163, 255, 0.7);
+}
+
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, rgba(7,11,20,0.95), rgba(5,7,13,0.95));
+  border: 1px solid rgba(50, 78, 115, 0.7);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.55);
+}
+
+body[data-theme="company"] .tab-bar {
+  background: linear-gradient(90deg, #f6f8fc, #e8edf7);
+  border-color: rgba(207, 215, 227, 0.9);
+}
+
+.tab-button {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 80px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.tab-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at top, rgba(53,242,179,0.2), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out;
+}
+
+.tab-button:hover::before {
+  opacity: 1;
+}
+
+.tab-button:hover {
+  color: var(--text-main);
+  border-color: rgba(53, 242, 179, 0.4);
+}
+
+body[data-theme="company"] .tab-button:hover {
+  border-color: rgba(74, 163, 255, 0.7);
+}
+
+.tab-button.active {
+  background: radial-gradient(circle at 20% 0, rgba(53,242,179,0.28), rgba(4,9,16,0.9));
+  border-color: rgba(53, 242, 179, 0.9);
+  color: #eafffb;
+  box-shadow:
+    0 0 0 1px rgba(53, 242, 179, 0.35),
+    0 0 14px rgba(53, 242, 179, 0.5);
+}
+
+body[data-theme="company"] .tab-button.active {
+  background: radial-gradient(circle at 20% 0, rgba(74,163,255,0.22), #ffffff);
+  border-color: rgba(74, 163, 255, 1);
+  color: #123050;
+  box-shadow:
+    0 0 0 1px rgba(74, 163, 255, 0.5),
+    0 0 12px rgba(74, 163, 255, 0.5);
+}
+
+.chip {
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(70, 97, 142, 0.9);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: default;
+}
+
+body[data-theme="company"] .chip {
+  border-color: rgba(187, 198, 217, 0.9);
+}
+
+.chip.primary {
+  border-color: rgba(53, 242, 179, 0.8);
+  color: var(--accent);
+}
+
+.tool-chip.active {
+  background: rgba(80, 200, 255, 0.30);
+  border: 1px solid rgba(120, 240, 255, 0.7);
+  color: #ffffff;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}

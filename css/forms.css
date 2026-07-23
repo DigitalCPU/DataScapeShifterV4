@@ -1,0 +1,206 @@
+.field-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  margin-bottom: 2px;
+}
+
+.field-input,
+.field-input-auth,
+.field-select {
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(70, 97, 142, 0.9);
+  background: rgba(3, 7, 13, 0.9);
+  color: var(--text-main);
+  font-size: 12px;
+  outline: none;
+}
+
+body[data-theme="company"] .field-input,
+body[data-theme="company"] .field-input-auth,
+body[data-theme="company"] .field-select {
+  background: #ffffff;
+  border-color: rgba(187, 198, 217, 0.9);
+  color: #1a1c22;
+}
+
+.field-input::placeholder,
+.field-input-auth::placeholder {
+  color: rgba(125, 140, 160, 0.7);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px dashed rgba(75, 104, 151, 0.9);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s ease-out;
+}
+
+body[data-theme="company"] .btn-ghost {
+  border-color: rgba(187, 198, 217, 0.9);
+  background: rgba(255,255,255,0.8);
+}
+
+.btn-ghost span {
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+.btn-ghost:hover {
+  border-style: solid;
+  border-color: rgba(53, 242, 179, 0.9);
+  color: var(--text-main);
+  box-shadow: 0 0 10px rgba(53, 242, 179, 0.4);
+}
+
+body[data-theme="company"] .btn-ghost:hover {
+  border-color: rgba(74, 163, 255, 1);
+  box-shadow: 0 0 10px rgba(74, 163, 255, 0.35);
+}
+
+.btn-primary-auth {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(53, 242, 179, 0.9);
+  background: radial-gradient(circle at top, rgba(53,242,179,0.4), rgba(3,8,15,0.95));
+  color: #eafffb;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+body[data-theme="company"] .btn-primary-auth {
+  border-color: rgba(74, 163, 255, 0.95);
+  background: linear-gradient(135deg, #4aa3ff, #2c7cd6);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(74, 163, 255, 0.5);
+}
+
+.btn-primary-auth:hover {
+  box-shadow: 0 0 12px rgba(53, 242, 179, 0.7);
+}
+
+body[data-theme="company"] .btn-primary-auth:hover {
+  box-shadow: 0 0 14px rgba(74, 163, 255, 0.75);
+}
+
+.auth-secondary {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.auth-secondary span {
+  color: var(--accent);
+}
+
+.auth-tab-row {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(72, 101, 146, 0.9);
+  padding: 2px;
+  margin-bottom: 10px;
+  background: rgba(4, 8, 15, 0.9);
+}
+
+body[data-theme="company"] .auth-tab-row {
+  background: #f4f7fd;
+  border-color: rgba(187, 198, 217, 0.9);
+}
+
+.auth-tab {
+  min-width: 80px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.auth-tab.active {
+  background: radial-gradient(circle at top, rgba(53,242,179,0.22), rgba(3,8,15,0.95));
+  color: var(--text-main);
+}
+
+body[data-theme="company"] .auth-tab.active {
+  background: radial-gradient(circle at top, rgba(74,163,255,0.26), #ffffff);
+  color: #142031;
+  box-shadow: 0 0 6px rgba(74, 163, 255, 0.4);
+}
+
+.auth-form {
+  margin-top: 6px;
+}
+
+.auth-row {
+  margin-bottom: 6px;
+}
+
+.auth-actions {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.setting-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.toggle input {
+  accent-color: var(--accent);
+}
+
+.slider-row {
+  margin-top: 4px;
+}
+
+.slider-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.slider-value {
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.slider-input {
+  width: 100%;
+}

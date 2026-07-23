@@ -1,0 +1,78 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(10,16,28,0.96), rgba(6,10,19,0.96));
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(88, 255, 199, 0.2);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(16px);
+}
+
+body[data-theme="company"] .app-header {
+  background: linear-gradient(135deg, #ffffff, #f3f7fc);
+  border-color: rgba(74, 163, 255, 0.4);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-orb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 20%, #d0fff5 0, var(--accent) 25%, var(--accent-soft) 60%, #02110c 100%);
+  box-shadow:
+    0 0 10px rgba(53, 242, 179, 0.7),
+    0 0 30px rgba(53, 242, 179, 0.4);
+}
+
+body[data-theme="amber"] .header-orb {
+  background: radial-gradient(circle at 30% 20%, #fff1d0 0, #ffb347 25%, #cc8a3f 60%, #2b1404 100%);
+  box-shadow:
+    0 0 10px rgba(255, 179, 71, 0.7),
+    0 0 30px rgba(255, 179, 71, 0.4);
+}
+
+body[data-theme="steel"] .header-orb {
+  background: radial-gradient(circle at 30% 20%, #e3f5ff 0, #7fd0ff 25%, #3a8bbd 60%, #020713 100%);
+  box-shadow:
+    0 0 10px rgba(127, 208, 255, 0.7),
+    0 0 30px rgba(127, 208, 255, 0.4);
+}
+
+body[data-theme="company"] .header-orb {
+  background: radial-gradient(circle at 30% 20%, #ffecec 0, #ff3b3b 28%, #b81421 60%, #53040a 100%);
+  box-shadow:
+    0 0 10px rgba(255, 59, 59, 0.8),
+    0 0 26px rgba(74, 163, 255, 0.7);
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.header-title-main {
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header-title-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
