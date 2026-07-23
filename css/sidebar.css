@@ -1,0 +1,132 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--bg-panel), var(--bg-panel-alt));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+  padding: 8px;
+  width: 260px;
+  min-width: 200px;
+  max-width: 360px;
+  transition: width 0.22s ease-out, padding 0.22s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-theme="company"] .sidebar {
+  background: linear-gradient(180deg, #f5f7fc, #edf1f9);
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar.collapsed {
+  width: 36px;
+  min-width: 36px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 4px 2px 6px 2px;
+}
+
+.sidebar-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-toggle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(83, 108, 151, 0.9);
+  background: radial-gradient(circle at top, rgba(53,242,179,0.25), rgba(6,11,18,0.95));
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s ease-out;
+}
+
+body[data-theme="company"] .sidebar-toggle {
+  border-color: rgba(119, 144, 182, 0.9);
+  background: radial-gradient(circle at top, rgba(74,163,255,0.25), #ffffff);
+}
+
+.sidebar-toggle:hover {
+  border-color: rgba(53, 242, 179, 0.9);
+  box-shadow: 0 0 12px rgba(53, 242, 179, 0.6);
+}
+
+body[data-theme="company"] .sidebar-toggle:hover {
+  border-color: rgba(74, 163, 255, 1);
+  box-shadow: 0 0 12px rgba(74, 163, 255, 0.6);
+}
+
+.sidebar.collapsed .sidebar-title {
+  opacity: 0;
+}
+
+.sidebar-body {
+  flex: 1 1 auto;
+  margin-top: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  background: radial-gradient(circle at top, rgba(34, 46, 66, 0.65), rgba(4, 7, 13, 0.96));
+  border: 1px solid rgba(30, 44, 66, 0.9);
+  overflow: hidden auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-soft) transparent;
+  font-size: 12px;
+}
+
+body[data-theme="company"] .sidebar-body {
+  background: radial-gradient(circle at top, rgba(255,255,255,0.95), #eef2f9);
+  border-color: rgba(207, 215, 227, 0.9);
+}
+
+.sidebar.collapsed .sidebar-body {
+  display: none;
+}
+
+.sidebar-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-warning);
+  margin-bottom: 4px;
+}
+
+.sidebar-section {
+  padding: 6px 0 10px 0;
+  border-bottom: 1px dashed rgba(64, 88, 126, 0.7);
+  margin-bottom: 6px;
+}
+
+body[data-theme="company"] .sidebar-section {
+  border-bottom-color: rgba(199, 208, 224, 0.9);
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.sidebar-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ShapeShifterV4 – Next-Gen Terrain Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/center-panel.css">
+  <link rel="stylesheet" href="css/cards.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-orb"></div>
+        <div class="header-title">
+          <div class="header-title-main">ShapeShifterV4</div>
+          <div class="header-title-sub">Next-Gen Terrain Lab</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="pill">Status: <span>ACTIVE</span></div>
+      </div>
+      <button class="header-settings-button" title="Settings">⚙</button>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">CONTROLS</div>
+          <button class="sidebar-toggle" title="Toggle sidebar">◀</button>
+        </div>
+        <div class="sidebar-body">
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Theme</div>
+            <div class="theme-row">
+              <div class="theme-tile active" data-theme="default">
+                <div class="theme-name">Default</div>
+                <div class="theme-desc">Teal</div>
+              </div>
+              <div class="theme-tile" data-theme="amber">
+                <div class="theme-name">Amber</div>
+                <div class="theme-desc">Warm</div>
+              </div>
+              <div class="theme-tile" data-theme="steel">
+                <div class="theme-name">Steel</div>
+                <div class="theme-desc">Cool</div>
+              </div>
+              <div class="theme-tile" data-theme="company">
+                <div class="theme-name">Company</div>
+                <div class="theme-desc">Light</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Settings</div>
+            <label class="toggle">
+              <input type="checkbox" checked>
+              <span>Grid Overlay</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox">
+              <span>Debug Mode</span>
+            </label>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Tools</div>
+            <div class="chip-row">
+              <div class="chip primary tool-chip active">terrain</div>
+              <div class="chip tool-chip">brush</div>
+              <div class="chip tool-chip">palette</div>
+              <div class="chip tool-chip">export</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Panel -->
+      <div class="center-panel">
+        <div class="center-header">
+          <div class="center-header-left">
+            <div class="center-title">Terrain Editor</div>
+            <div class="center-subtitle">Paint, sculpt, and transform</div>
+          </div>
+          <div class="center-header-right">
+            <div class="center-meta">FPS: 60</div>
+            <div class="center-toolbar">
+              <button class="toolbar-button">Undo</button>
+              <button class="toolbar-button">Redo</button>
+              <button class="toolbar-button">Export</button>
+            </div>
+          </div>
+        </div>
+        <div class="center-body">
+          <div class="center-placeholder active">
+            <strong>Welcome to ShapeShifterV4</strong><br>
+            Canvas ready for terrain sculpting
+          </div>
+        </div>
+        <div class="center-overlay-caption">v4.1.0 — <span>BETA</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
