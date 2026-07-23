@@ -1,43 +1,39 @@
 /**
- * ShapeShifterV4 Main Module
- * Orchestrates initialization of all components
+ * ShapeShifterV4 - Main Application Entry Point
+ * Initializes terrain engine when DOM is ready
  */
-import ThemeManager from './theme-manager.js';
-import SidebarManager from './sidebar-manager.js';
-import TabManager from './tab-manager.js';
 
-class App {
+import { TerrainEngine } from './terrain-engine.js';
+
+class ShapeShifterApp {
   constructor() {
-    this.themeManager = new ThemeManager('default');
-    this.sidebarManager = new SidebarManager();
-    this.tabManager = new TabManager();
+    this.terrainEngine = null;
     this.init();
   }
 
   init() {
-    this.setupEventListeners();
-    console.log('ShapeShifterV4 initialized');
-  }
-
-  setupEventListeners() {
-    // Listen for settings button clicks
-    const settingsBtn = document.querySelector('.header-settings-button');
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', () => this.toggleSettings());
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.start());
+    } else {
+      this.start();
     }
   }
 
-  toggleSettings() {
-    // Settings toggle logic here
-    console.log('Settings toggled');
+  start() {
+    console.log('ShapeShifterV4 initializing...');
+
+    const canvasContainer = document.querySelector('.center-body');
+    
+    if (!canvasContainer) {
+      console.error('Canvas container not found');
+      return;
+    }
+
+    // Initialize terrain engine
+    this.terrainEngine = new TerrainEngine(canvasContainer);
+    console.log('✓ Terrain engine initialized');
   }
 }
 
-// Initialize app when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.app = new App();
-  });
-} else {
-  window.app = new App();
-}
+// Initialize app
+const app = new ShapeShifterApp();
