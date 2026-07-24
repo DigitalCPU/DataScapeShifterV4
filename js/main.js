@@ -4,10 +4,12 @@
  */
 
 import { TerrainEngine } from './terrain-engine.js';
+import { PaintCanvas } from './paint-canvas.js';
 
 class ShapeShifterApp {
   constructor() {
     this.terrainEngine = null;
+    this.painter = null;
     this.init();
   }
 
@@ -31,7 +33,21 @@ class ShapeShifterApp {
 
     // Initialize terrain engine
     this.terrainEngine = new TerrainEngine(canvasContainer);
-    console.log('✓ Terrain engine initialized');
+
+    // Initialize painter overlay (heightmap resolution should match terrain sampling resolution)
+    this.painter = new PaintCanvas(canvasContainer, {
+      resolution: 256,
+      displayScale: 2,
+      brushSize: 12,
+      brushStrength: 0.03
+    });
+
+    // When painting changes, update the terrain (consider throttling for performance)
+    this.painter.onChange = (heightData, w, h) => {
+      this.terrainEngine.updateHeightmapFromArray(heightData, w, h);
+    };
+
+    console.log('✓ Terrain engine and painter initialized');
   }
 }
 
